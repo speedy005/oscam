@@ -368,9 +368,12 @@
 /* ===========================
  *			constants
  * =========================== */
-#define CS_VERSION				"1.30_svn"
+#define CS_VERSION				"1.30"
 #ifndef CS_SVN_VERSION
 # define CS_SVN_VERSION			"test"
+#endif
+#ifndef CS_GIT_COMMIT
+# define CS_GIT_COMMIT			"a2b4c8d8"
 #endif
 #ifdef CS_CACHEEX
 #ifdef CS_CACHEEX_AIO

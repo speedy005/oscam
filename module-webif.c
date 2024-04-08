@@ -9322,6 +9322,7 @@ static int32_t process_request(FILE * f, IN_ADDR_T in)
 
 			tpl_addVar(vars, TPLADD, "CS_VERSION", CS_VERSION);
 			tpl_addVar(vars, TPLADD, "CS_SVN_VERSION", CS_SVN_VERSION);
+			tpl_addVar(vars, TPLADD, "CS_GIT_COMMIT", CS_GIT_COMMIT);
 			tpl_addVar(vars, TPLADD, "CS_TARGET", CS_TARGET);
 			tpl_addVar(vars, TPLADD, "HTTPOSCAMLABEL", xml_encode(vars,cfg.http_oscam_label));
 			if (!boxtype_is("generic"))
@@ -9358,7 +9359,7 @@ static int32_t process_request(FILE * f, IN_ADDR_T in)
 				tpl_addVar(vars, TPLADD, "REFRESH", tpl_getTpl(vars, "REFRESH"));
 			}
 #ifdef WEBIF_JQUERY
-			tpl_printf(vars, TPLADD, "SRCJQUERY", "jquery.js?v=%s", CS_SVN_VERSION);
+			tpl_printf(vars, TPLADD, "SRCJQUERY", "jquery.js?v=%s-%s", CS_SVN_VERSION, CS_GIT_COMMIT);
 #else
 			tpl_addVar(vars, TPLADD, "SRCJQUERY", cfg.http_extern_jquery);
 #endif

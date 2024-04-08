@@ -1,7 +1,8 @@
 ##CALLBACK##{
 "oscam": {
-    "version": "##CS_VERSION## build r##CS_SVN_VERSION##",
+    "version": "##CS_VERSION## build r##CS_SVN_VERSION##@##CS_GIT_COMMIT##",
     "revision": "##CS_SVN_VERSION##",
+    "commit": "##CS_GIT_COMMIT##",
     "starttime": "##APISTARTTIME##",
     "apiruntime": "##APIRUNTIME##",
     "runtime": "##RUNTIME##",

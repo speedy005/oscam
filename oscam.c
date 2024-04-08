@@ -137,7 +137,7 @@ static void show_usage(void)
 		   "| | | \\___ \\| |  / _` | '_ ` _ \\\n"
 		   "| |_| |___) | |_| (_| | | | | | |\n"
 		   " \\___/|____/ \\___\\__,_|_| |_| |_|\n\n");
-	printf("OSCam Cardserver v%s, build r%s (%s)\n", CS_VERSION, CS_SVN_VERSION, CS_TARGET);
+	printf("OSCam Cardserver v%s, build r%s@%s (%s)\n", CS_VERSION, CS_SVN_VERSION, CS_GIT_COMMIT, CS_TARGET);
 	printf("Copyright (C) 2009-2024 OSCam developers.\n");
 	printf("This program is distributed under GPLv3.\n");
 	printf("OSCam is based on Streamboard mp-cardserver v0.9d written by dukat\n");
@@ -362,7 +362,7 @@ static void write_versionfile(bool use_stdout)
 				st.tm_hour, st.tm_min, st.tm_sec);
 	}
 
-	fprintf(fp, "Version:        oscam-%s-r%s\n", CS_VERSION, CS_SVN_VERSION);
+	fprintf(fp, "Version:        oscam-%s-r%s@%s\n", CS_VERSION, CS_SVN_VERSION, CS_GIT_COMMIT);
 	fprintf(fp, "Compiler:       %s\n", CS_TARGET);
 	fprintf(fp, "Box type:       %s (%s)\n", boxtype_get(), boxname_get());
 	fprintf(fp, "PID:            %d\n", getppid());
@@ -636,7 +636,7 @@ static void cs_dumpstack(int32_t sig)
 
 	fprintf(stderr, "crashed with signal %d on %swriting oscam.crash\n", sig, buf);
 
-	fprintf(fp, "%sOSCam cardserver v%s, build r%s (%s)\n", buf, CS_VERSION, CS_SVN_VERSION, CS_TARGET);
+	fprintf(fp, "%sOSCam cardserver v%s, build r%s@%s (%s)\n", buf, CS_VERSION, CS_SVN_VERSION, CS_GIT_COMMIT, CS_TARGET);
 	fprintf(fp, "FATAL: Signal %d: %s Fault. Logged StackTrace:\n\n", sig, (sig == SIGSEGV) ? "Segmentation" : ((sig == SIGBUS) ? "Bus" : "Unknown"));
 	fclose(fp);
 

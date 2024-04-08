@@ -98,6 +98,7 @@ Usage: `basename $0` [parameters]
 
  -v, --oscam-version       Display OSCam version.
  -r, --oscam-revision      Display OSCam SVN revision.
+ -c, --oscam-commit        Display OSCam GIT short commit sha 8-digits.
 
  -O, --detect-osx-sdk-version  Find where OS X SDK is located
 
@@ -703,12 +704,14 @@ do
 		break
 	;;
 	'-r'|'--oscam-revision')
-		revision=`(svnversion -n . 2>/dev/null || printf 0) | sed 's/.*://; s/[^0-9]*$//; s/^$/0/'`
-		if [ "$revision" = "0" ]
-		then
-			which git > /dev/null 2>&1 && revision=`git log -10 --pretty=%B | grep git-svn-id | head -n 1 | sed -n -e 's/^.*trunk@\([0-9]*\) .*$/\1/p'`
-		fi
-		echo $revision
+		offset=1103 #difference between last svn revision number and git commit count (without merge commits) + 1
+		revision=`git rev-list --no-merges --count HEAD`
+		echo $(($offset + $revision))
+		break
+	;;
+	'-c'|'--oscam-commit') 
+		sha=`git log 2>/dev/null | sed -n 1p | cut -d ' ' -f2 | cut -c1-8`
+		echo $sha
 		break
 	;;
 	'-O'|'--detect-osx-sdk-version')

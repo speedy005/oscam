@@ -511,9 +511,9 @@ FILE *create_config_file(const char *conf_filename)
 		cs_log("ERROR: Cannot create file \"%s\" (errno=%d %s)", temp_file, errno, strerror(errno));
 		return NULL;
 	}
-	fprintf(f, "# %s generated automatically by Streamboard OSCAM %s SVN r%s\n",
-			conf_filename, CS_VERSION, CS_SVN_VERSION);
-	fprintf(f, "# Read more: https://svn.streamboard.tv/oscam/trunk/Distribution/doc/txt/%s.txt\n\n",
+	fprintf(f, "# %s generated automatically by Streamboard OSCAM %s SVN r%s@%s\n",
+			conf_filename, CS_VERSION, CS_SVN_VERSION, CS_GIT_COMMIT);
+	fprintf(f, "# Read more: https://git.streamboard.tv/common/oscam/-/blob/master/Distribution/doc/txt/%s.txt\n\n",
 			conf_filename);
 	return f;
 }

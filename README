@@ -32,21 +32,21 @@ Version history
 ===============
 
 OSCam history is accessible through Trac timeline at:
-   https://trac.streamboard.tv/oscam/timeline
+   https://git.streamboard.tv/common/oscam/-/commits/master
 
 
 Repositories
 ============
 
-SVN repository:
-   svn checkout https://svn.streamboard.tv/oscam/trunk oscam-svn
+GIT repository:
+   git clone https://git.streamboard.tv/common/oscam.git oscam
 
 
 Building OSCam from source
 ==========================
 
  - Get the lastest sources from SVN
-    svn checkout https://svn.streamboard.tv/oscam/trunk oscam-trunk
+    git clone https://git.streamboard.tv/common/oscam.git oscam
 
  - Go to oscam-trunk directory.
 
@@ -64,7 +64,7 @@ Building OScam for different CPUs (cross-compilation)
 First you need to install the target CPU toolchain. Already built toolchains
 for various architectures can be downloaded from:
 
-    https://trac.streamboard.tv/oscam/wiki/crosscompiling
+    https://git.streamboard.tv/common/oscam/-/wikis/CrossCompiling
 
 In order to cross compile OSCam you need to set CROSS variable when
 running make. For example to compile for SH4 architecture you need
@@ -105,7 +105,7 @@ Help and Support
 man pages and configuration examples are in Distribution/doc directory.
 
 You may visit our Trac system for tracking and filling bug reports.
-   https://trac.streamboard.tv/oscam/newticket
+   https://git.streamboard.tv/common/oscam/-/issues/new
 
 If you experience any problems with OSCam, feel free to post in our support
 forum under (mainly German and English language) at:
