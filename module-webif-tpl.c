@@ -785,7 +785,7 @@ char *xml_encode(struct templatevars *vars, const char *chartoencode)
 			pos += 1;
 			break;
 		default:
-			if(tmp < 32 || tmp > 127)
+			if(tmp < 32)
 			{
 				snprintf(buffer, 7, "&#%d;", tmp);
 				memcpy(encoded + pos, buffer, cs_strlen(buffer));
