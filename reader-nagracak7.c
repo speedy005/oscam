@@ -1073,7 +1073,7 @@ static int32_t CAK7_GetCamKey(struct s_reader *reader)
 			else
 			{
 				cmd0e[136] = 0x00;
-				cmd0e[137] = !reader->cwpkota ? cwekeycount : 0x00;
+				cmd0e[137] = !reader->cwpkota ? 0xFF : 0x00;
 			}
 			if(reader->otacsc_length)
 			{
@@ -1082,7 +1082,7 @@ static int32_t CAK7_GetCamKey(struct s_reader *reader)
 			else
 			{
 				cmd0e[138] = 0x00;
-				cmd0e[139] = reader->cwpkota ? cwekeycount : 0x00;
+				cmd0e[139] = reader->cwpkota ? 0xFF : 0x00;
 			}
 		}
 		else
