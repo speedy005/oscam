@@ -10,11 +10,6 @@
 #define DVB_BUFFER_WAIT_CSA 188*(DVB_MAX_TS_PACKETS-128)
 #define DVB_BUFFER_SIZE DVB_BUFFER_SIZE_CSA
 
-//#define __BISS__
-#ifdef __BISS__
-#define MAX_STREAM_PIDS 32
-#endif
-
 #include "cscrypt/md5.h"
 #include <dvbcsa/dvbcsa.h>
 #if DVBCSA_KEY_ECM
@@ -62,10 +57,6 @@ typedef struct
 	uint16_t ecm_pid;
 	uint16_t emm_pid;
 	uint16_t pcr_pid;
-#ifdef __BISS__
-	uint8_t STREAMpidcount;
-	uint16_t STREAMpids[MAX_STREAM_PIDS];
-#endif
 	uint8_t ecm_md5[MD5_DIGEST_LENGTH];
 } stream_client_data;
 

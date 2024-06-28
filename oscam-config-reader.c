@@ -114,7 +114,6 @@ static void protocol_fn(const char *token, char *value, void *setting, FILE *f)
 			{ "newcamd525", R_NEWCAMD },
 			{ "newcamd524", R_NEWCAMD },
 			{ "drecas",     R_DRECAS },
-			{ "emu",        R_EMU },
 			{ NULL,         0 }
 		}, *p;
 		int i;
@@ -577,9 +576,6 @@ void ftab_fn(const char *token, char *value, void *setting, long ftab_type, FILE
 		if(ftab_type & FTAB_FBPCAID)     { rdr = container_of(setting, struct s_reader, fallback_percaid); }
 		if(ftab_type & FTAB_LOCALCARDS)  { rdr = container_of(setting, struct s_reader, localcards); }
 		if(ftab_type & FTAB_IGNCHKSMCAID){ rdr = container_of(setting, struct s_reader, disablecrccws_only_for); }
-#ifdef WITH_EMU
-		if(ftab_type & FTAB_EMUAU)       { rdr = container_of(setting, struct s_reader, emu_auproviders); }
-#endif
 #ifdef MODULE_GBOX
 		if(ftab_type & FTAB_CCCGBXRESHARE){ rdr = container_of(setting, struct s_reader, ccc_gbx_reshare_ident); }
 #endif
@@ -1125,10 +1121,6 @@ static const struct config_list reader_opts[] =
 #endif
 #ifdef READER_DRECAS
 	DEF_OPT_STR("stmkeys"                         , OFS(stmkeys),                         NULL),
-#endif
-#ifdef WITH_EMU
-	DEF_OPT_FUNC_X("emu_auproviders"              , OFS(emu_auproviders),                ftab_fn, FTAB_READER | FTAB_EMUAU),
-	DEF_OPT_INT8("emu_datecodedenabled"           , OFS(emu_datecodedenabled),           0),
 #endif
 	DEF_OPT_INT8("deprecated"                     , OFS(deprecated),                      0),
 	DEF_OPT_INT8("audisabled"                     , OFS(audisabled),                      0),

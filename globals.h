@@ -372,7 +372,7 @@
 #define WIKI_URL				"https://wiki.streamboard.tv/wiki"
 #define BOARD_URL				"https://board.streamboard.tv"
 #ifndef CS_VERSION
-#define CS_VERSION				"2.24.06-11791"
+#define CS_VERSION				"2.24.06-11792"
 #endif
 #ifndef CS_GIT_COMMIT
 #define CS_GIT_COMMIT			"a2b4c6d8"
@@ -413,11 +413,7 @@
 
 #define MAX_CMD_SIZE 0xff + 5  // maximum value from length byte + command header
 
-#ifdef WITH_EMU
-#define CS_EMMCACHESIZE			1024	// nr of EMMs that EMU reader will cache
-#else
 #define CS_EMMCACHESIZE			512		// nr of EMMs that each reader will cache
-#endif
 #define MSGLOGSIZE				64		// size of string buffer for a ecm to return messages
 
 #define D_TRACE					0x0001	// Generate very detailed error/trace messages per routine
@@ -894,13 +890,6 @@ typedef struct s_entitlement						// contains entitlement Info
 	uint32_t		class;							// the class needed for some systems
 	time_t			start;							// startdate
 	time_t			end;							// enddate
-#ifdef WITH_EMU
-	bool			isKey;
-	bool			isData;
-	char			name[8];
-	uint8_t			*key;
-	uint32_t		keyLength;
-#endif
 } S_ENTITLEMENT;
 
 struct s_client;
@@ -1929,10 +1918,6 @@ struct s_reader										// contains device info, reader info and card info
 #ifdef MODULE_GHTTP
 	uint8_t			ghttp_use_ssl;
 #endif
-#ifdef WITH_EMU
-	FTAB			emu_auproviders;				// AU providers for Emu reader
-	int8_t			emu_datecodedenabled;			// date-coded keys for BISS
-#endif
 	uint8_t			cnxlastecm;						// == 0 - last ecm has not been paired ecm, > 0 last ecm has been paired ecm
 	LLIST			*emmstat;						// emm stats
 	CS_MUTEX_LOCK	emmstat_lock;
@@ -2641,26 +2626,16 @@ bool boxtype_is(const char *boxtype);
 bool boxname_is(const char *boxname);
 const char *boxtype_get(void);
 const char *boxname_get(void);
-static inline bool caid_is_fake(uint16_t caid) { return caid == 0xffff; }
-static inline bool caid_is_biss(uint16_t caid) { return caid >> 8 == 0x26; }
-static inline bool caid_is_biss_fixed(uint16_t caid) { return caid == 0x2600 || caid == 0x2602; } // fixed cw, fake ecm
-static inline bool caid_is_biss_dynamic(uint16_t caid) { return caid == 0x2610; } // dynamic cw, real ecm and emm
 static inline bool caid_is_seca(uint16_t caid) { return caid >> 8 == 0x01; }
 static inline bool caid_is_viaccess(uint16_t caid) { return caid >> 8 == 0x05; }
 static inline bool caid_is_irdeto(uint16_t caid) { return caid >> 8 == 0x06; }
 static inline bool caid_is_videoguard(uint16_t caid) { return caid >> 8 == 0x09; }
 static inline bool caid_is_conax(uint16_t caid) { return caid >> 8 == 0x0B; }
 static inline bool caid_is_cryptoworks(uint16_t caid) { return caid >> 8 == 0x0D; }
-static inline bool caid_is_powervu(uint16_t caid) { return caid >> 8 == 0x0E; }
-static inline bool caid_is_director(uint16_t caid) { return caid >> 8 == 0x10; }
 static inline bool caid_is_betacrypt(uint16_t caid) { return caid >> 8 == 0x17; }
 static inline bool caid_is_nagra(uint16_t caid) { return caid >> 8 == 0x18; }
 static inline bool caid_is_bulcrypt(uint16_t caid) { return caid == 0x5581 || caid == 0x4AEE; }
 static inline bool caid_is_dre(uint16_t caid) { return caid == 0x4AE0 || caid == 0x4AE1 || caid == 0x2710;}
 const char *get_cardsystem_desc_by_caid(uint16_t caid);
-
-#ifdef WITH_EMU
-FILTER *get_emu_prids_for_caid(struct s_reader *rdr, uint16_t caid);
-#endif
 
 #endif
