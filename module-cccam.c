@@ -1544,7 +1544,7 @@ struct cc_card *get_matching_card(struct s_client *cl, ECM_REQUEST *cur_er, int8
 		}
 
 		if((ncard->caid == cur_er->caid // caid matches
-			|| lb_match) // or system matches if caid ends with 00
+			|| lb_match)) // or system matches if caid ends with 00
 		{
 			int32_t goodSidCount = ll_count(ncard->goodsids);
 			int32_t badSidCount = ll_count(ncard->badsids);

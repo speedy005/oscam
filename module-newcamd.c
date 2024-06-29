@@ -1184,7 +1184,7 @@ static int8_t newcamd_auth_client(IN_ADDR_T ip, uint8_t *deskey)
 					uint32_t rprid;
 					found = 0;
 
-					if(pufilt->caid == aureader->caid && aureader->typ != R_EMU)
+					if(pufilt->caid == aureader->caid)
 					{
 						for(k = 0; k < aureader->nprov; k++)
 						{
