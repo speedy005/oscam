@@ -372,7 +372,7 @@
 #define WIKI_URL				"https://wiki.streamboard.tv/wiki"
 #define BOARD_URL				"https://board.streamboard.tv"
 #ifndef CS_VERSION
-#define CS_VERSION				"2.24.06-11792"
+#define CS_VERSION				"2.24.06-11793"
 #endif
 #ifndef CS_GIT_COMMIT
 #define CS_GIT_COMMIT			"a2b4c6d8"
@@ -452,7 +452,6 @@
 #define R_SMART					0x7		// Smartreader+
 #define R_PCSC					0x8		// PCSC
 #define R_DRECAS				0x9		// Reader DRECAS
-#define R_EMU					0x17	// Reader EMU
 /////// proxy readers after R_CS378X
 #define R_CAMD35				0x20	// Reader cascading camd 3.5x
 #define R_CAMD33				0x21	// Reader cascading camd 3.3x
@@ -1741,7 +1740,6 @@ struct s_reader										// contains device info, reader info and card info
 	char			cc_build[7];					// cccam build number
 	int8_t			cc_maxhops;						// cccam max distance
 	int8_t			cc_mindown;						// cccam min downhops
-	int8_t			cc_want_emu;					// Schlocke: Client want to have EMUs, 0 - NO; 1 - YES
 	uint32_t		cc_id;
 	int8_t			cc_keepalive;
 	int8_t			cc_hop;							// For non-cccam reader: hop for virtual cards
