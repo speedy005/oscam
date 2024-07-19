@@ -187,29 +187,64 @@ int32_t emm_reader_match(struct s_reader *reader, uint16_t caid, uint32_t provid
 
 	if(emmcaid != caid)
 	{
-		if(reader->typ == R_CAMD35 || reader->typ == R_CS378X || reader->typ == R_CCCAM)
-		{
-			return 1; //network reader could have multiple CAIDs
-		}
 		int caid_found = 0;
-		if (!reader->csystem)
-			return 0;
-		for(i = 0; reader->csystem->caids[i]; i++)
-		{
-			uint16_t cs_caid = reader->csystem->caids[i];
-			if (emmcaid && cs_caid == caid)
+		if(reader->typ == R_CAMD35 || reader->typ == R_CS378X || reader->typ == R_CCCAM)
+		{ //network reader could have multi caid with valid AU => check if the conditions exist to 'force' emm
+			uint16_t checkcaid;
+			//emmpid caid value 186A is valid for 186A card (HD04) and also for 186D card (HD04H)
+			//An array of "checkcaid" should be implemented (containing 0x186A and 0x187D values) to be sure to force EMM also for caid 187D
+			if(caid == 0x187E)
 			{
-				caid_found = 1;
-				break;
+				checkcaid = 0x1856;
+			}
+			else
+			{
+				checkcaid = caid;
 			}
 
-			if ((emmcaid == 0) && chk_ctab_ex(caid, &reader->ctab))
+			struct s_client *cl = reader->client;
+			if(cl)
 			{
-				caid_found = 1;
-				break;
+				if(cl->last_caid == checkcaid && cl->last_provid == provid)
+				{
+					//rdr_log_dbg(reader, D_EMM, "emmpid have same caid/provid of last ecm of client -> SKIP!");
+					return 0;
+				}
 			}
 
+			if(chk_ctab(checkcaid, &reader->ctab) && chk_ident_filter(checkcaid, provid, &reader->ftab))
+			{
+				rdr_log_dbg(reader, D_EMM, "emmpid caid %04X found in ctab of reader (if not empty) && emmpid provid %06X found in ftab of reader (if not empy) -> SEND!", checkcaid, provid);
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
 		}
+		else
+		{
+			if(!reader->csystem)
+			{
+				return 0;
+			}
+			for(i = 0; reader->csystem->caids[i]; i++)
+			{
+				uint16_t cs_caid = reader->csystem->caids[i];
+				if(emmcaid && cs_caid == caid)
+				{
+					caid_found = 1;
+					break;
+				}
+
+				if((emmcaid == 0) && chk_ctab_ex(caid, &reader->ctab))
+				{
+					caid_found = 1;
+					break;
+				}
+			}
+		}
+
 		if(!caid_found)
 		{
 			rdr_log_dbg(reader, D_EMM, "reader_caid %04X != emmpid caid %04X -> SKIP!", emmcaid, caid);
