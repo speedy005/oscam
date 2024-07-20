@@ -188,7 +188,7 @@ int32_t emm_reader_match(struct s_reader *reader, uint16_t caid, uint32_t provid
 	if(emmcaid != caid)
 	{
 		int caid_found = 0;
-		if(reader->typ == R_CAMD35 || reader->typ == R_CS378X || reader->typ == R_CCCAM)
+		if((reader->typ == R_CAMD35 || reader->typ == R_CS378X || reader->typ == R_CCCAM) && !caid_is_viaccess(caid))
 		{ //network reader could have multi caid with valid AU => check if the conditions exist to 'force' emm
 			uint16_t checkcaid;
 			//emmpid caid value 186A is valid for 186A card (HD04) and also for 186D card (HD04H)
