@@ -33,7 +33,6 @@ enum clock_type cs_getclocktype(void);
 void __cs_pthread_cond_init(const char *n, pthread_cond_t *cond);
 void cs_pthread_cond_init(const char *n, pthread_mutex_t *mutex, pthread_cond_t *cond);
 
-void __cs_pthread_cond_init_nolog(const char *n, pthread_cond_t *cond);
 void cs_pthread_cond_init_nolog(const char *n, pthread_mutex_t *mutex, pthread_cond_t *cond);
 
 void sleepms_on_cond(const char *n, pthread_mutex_t *mutex, pthread_cond_t *cond, uint32_t msec);

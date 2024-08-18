@@ -22,7 +22,6 @@ int32_t sid_eq_bb(struct cc_srvid_block *srvid1, struct cc_srvid_block *srvid2);
 int32_t same_card(struct cc_card *card1, struct cc_card *card2);
 int32_t same_card2(struct cc_card *card1, struct cc_card *card2, int8_t compare_grp);
 void cc_UA_oscam2cccam(uint8_t *in, uint8_t *out, uint16_t caid);
-void cc_SA_oscam2cccam(uint8_t *in, uint8_t *out);
 void set_card_timeout(struct cc_card *card);
 
 struct cc_srvid *is_good_sid(struct cc_card *card, struct cc_srvid *srvid_good);

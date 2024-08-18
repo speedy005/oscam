@@ -217,12 +217,6 @@ int32_t emm_reader_match(struct s_reader *reader, uint16_t caid, uint32_t provid
 		}
 	}
 
-	//if(!hexserialset(reader)) // There are cards without serial, they should get emm of type global and shared!
-	//{
-	//	rdr_log_dbg(reader, D_EMM, "no hexserial is set");
-	//	return 0;
-	//}
-
 	if(!provid)
 	{
 		rdr_log_dbg(reader, D_EMM, "reader %04X match since emmpid has no provid -> SEND!", caid);

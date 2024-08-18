@@ -1897,20 +1897,6 @@ void update_ecmlen_from_stat(struct s_reader *rdr)
 }
 
 /**
- * mark as last reader after checked for cache requests:
- **/
-void lb_mark_last_reader(ECM_REQUEST *er)
-{
-	//OLDEST_READER: set lb_last
-	struct s_ecm_answer *ea;
-	for(ea = er->matching_rdr; ea; ea = ea->next)
-	{
-		if((ea->status & (READER_ACTIVE | READER_FALLBACK)) == READER_ACTIVE)
-			{ cs_ftime(&ea->reader->lb_last); }
-	}
-}
-
-/**
  * Automatic timeout feature depending on statistik values
  **/
 static uint32_t __lb_auto_timeout(ECM_REQUEST *er, uint32_t ctimeout)

@@ -5,8 +5,6 @@ void aes_set_key(struct aes_keys *aes, char *key);
 bool aes_set_key_alloc(struct aes_keys **aes, char *key);
 void aes_decrypt(struct aes_keys *aes, uint8_t *buf, int32_t n);
 void aes_encrypt_idx(struct aes_keys *aes, uint8_t *buf, int32_t n);
-void aes_cbc_encrypt(struct aes_keys *aes, uint8_t *buf, int32_t n, uint8_t *iv);
-void aes_cbc_decrypt(struct aes_keys *aes, uint8_t *buf, int32_t n, uint8_t *iv);
 
 void add_aes_entry(AES_ENTRY **list, uint16_t caid, uint32_t ident, int32_t keyid, uint8_t *aesKey);
 void parse_aes_entry(AES_ENTRY **list, char *label, char *value);

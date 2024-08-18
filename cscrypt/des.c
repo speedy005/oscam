@@ -159,26 +159,6 @@ static const uint8_t weak_keys[16][8] =
 	{0xFE,0xE0,0xFE,0xE0,0xFE,0xF1,0xFE,0xF1}
 };
 
-static const uint8_t odd_parity[] =
-{
-	1,  1,  2,  2,  4,  4,  7,  7,  8,  8, 11, 11, 13, 13, 14, 14,
-	16, 16, 19, 19, 21, 21, 22, 22, 25, 25, 26, 26, 28, 28, 31, 31,
-	32, 32, 35, 35, 37, 37, 38, 38, 41, 41, 42, 42, 44, 44, 47, 47,
-	49, 49, 50, 50, 52, 52, 55, 55, 56, 56, 59, 59, 61, 61, 62, 62,
-	64, 64, 67, 67, 69, 69, 70, 70, 73, 73, 74, 74, 76, 76, 79, 79,
-	81, 81, 82, 82, 84, 84, 87, 87, 88, 88, 91, 91, 93, 93, 94, 94,
-	97, 97, 98, 98, 100,100,103,103,104,104,107,107,109,109,110,110,
-	112,112,115,115,117,117,118,118,121,121,122,122,124,124,127,127,
-	128,128,131,131,133,133,134,134,137,137,138,138,140,140,143,143,
-	145,145,146,146,148,148,151,151,152,152,155,155,157,157,158,158,
-	161,161,162,162,164,164,167,167,168,168,171,171,173,173,174,174,
-	176,176,179,179,181,181,182,182,185,185,186,186,188,188,191,191,
-	193,193,194,194,196,196,199,199,200,200,203,203,205,205,206,206,
-	208,208,211,211,213,213,214,214,217,217,218,218,220,220,223,223,
-	224,224,227,227,229,229,230,230,233,233,234,234,236,236,239,239,
-	241,241,242,242,244,244,247,247,248,248,251,251,253,253,254,254
-};
-
 static const uint8_t shifts2[16] = {0,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0};
 
 static const uint32_t des_skb[8][64] =
@@ -479,46 +459,6 @@ static const uint32_t des_SPtrans[8][64] =
 
 static const int32_t DES_KEY_SZ=8;
 
-void des_set_odd_parity(uint8_t* key)
-{
-	int32_t i;
-
-	for (i=0; i < DES_KEY_SZ; i++)
-		key[i]=odd_parity[key[i]&0xff];
-}
-
-int8_t check_parity(const uint8_t* key)
-{
-	int32_t i;
-
-	for (i=0; i < DES_KEY_SZ; i++)
-	{
-		if (key[i] != odd_parity[key[i]&0xff])
-			return 0;
-	}
-	return 1;
-}
-
-int8_t des_is_weak_key(const uint8_t* key)
-{
-	int32_t i, j;
-
-	for (i=0; i < 16; i++)
-	{
-		for(j=0; j < DES_KEY_SZ; j++)
-		{
-			if (weak_keys[i][j] != key[j])
-			{
-				// not weak
-				continue;
-			}
-		}
-		// weak
-		return 1;
-	}
-	return 0;
-}
-
 static uint32_t Get32bits(const uint8_t* key, int32_t kindex)
 {
 	return(((key[kindex+3]&0xff)<<24) + ((key[kindex+2]&0xff)<<16) + ((key[kindex+1]&0xff)<<8) + (key[kindex]&0xff));
@@ -772,21 +712,6 @@ static inline void xxor(uint8_t *data, int32_t len, const uint8_t *v1, const uin
 	}
 }
 
-void des_ecb_encrypt(uint8_t* data, const uint8_t* key, int32_t len)
-{
-	uint32_t schedule[32];
-	int32_t i;
-
-	des_set_key(key, schedule);
-
-	len&=~7;
-
-	for(i=0; i<len; i+=8)
-	{
-		des(&data[i], schedule, 1);
-	}
-}
-
 void des_ecb_decrypt(uint8_t* data, const uint8_t* key, int32_t len)
 {
 	uint32_t schedule[32];
@@ -839,50 +764,6 @@ void des_cbc_decrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key, int32
 	}
 }
 
-void des_ede2_cbc_encrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key1, const uint8_t* key2, int32_t len)
-{
-	const uint8_t *civ = iv;
-	uint32_t schedule1[32], schedule2[32];
-	int32_t i;
-
-	des_set_key(key1, schedule1);
-	des_set_key(key2, schedule2);
-
-	len&=~7;
-
-	for(i=0; i<len; i+=8)
-	{
-		xxor(&data[i],8,&data[i],civ);
-		civ=&data[i];
-
-		des(&data[i], schedule1, 1);
-		des(&data[i], schedule2, 0);
-		des(&data[i], schedule1, 1);
-	}
-}
-
-void des_ede2_cbc_decrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key1, const uint8_t* key2, int32_t len)
-{
-	uint8_t civ[2][8];
-	uint32_t schedule1[32], schedule2[32];
-	int32_t i, n=0;
-
-	des_set_key(key1, schedule1);
-	des_set_key(key2, schedule2);
-
-	len&=~7;
-
-	memcpy(civ[n],iv,8);
-	for(i=0; i<len; i+=8,data+=8,n^=1)
-	{
-		memcpy(civ[1-n],data,8);
-		des(data, schedule1, 0);
-		des(data, schedule2, 1);
-		des(data, schedule1, 0);
-		xxor(data,8,data,civ[n]);
-	}
-}
-
 void des_ecb3_decrypt(uint8_t* data, const uint8_t* key)
 {
 	uint8_t desA[8];
@@ -899,22 +780,4 @@ void des_ecb3_decrypt(uint8_t* data, const uint8_t* key)
 	des(data, schedule1, 0);
 	des(data, schedule2, 1);
 	des(data, schedule1, 0);
-}
-
-void des_ecb3_encrypt(uint8_t* data, const uint8_t* key)
-{
-	uint8_t desA[8];
-	uint8_t desB[8];
-
-	uint32_t schedule1[32];
-	uint32_t schedule2[32];
-
-	memcpy(desA, key, 8);
-	des_set_key(desA, schedule1);
-	memcpy(desB, key+8, 8);
-	des_set_key(desB, schedule2);
-
-	des(data, schedule1, 1);
-	des(data, schedule2, 0);
-	des(data, schedule1, 1);
 }

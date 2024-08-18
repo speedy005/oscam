@@ -337,48 +337,6 @@ void *ll_iter_next_remove(LL_ITER *it)
 	return NULL;
 }
 
-void *ll_iter_move(LL_ITER *it, int32_t offset)
-{
-	if(it && it->l && !it->l->flag)
-	{
-		int32_t i;
-		void *res = NULL;
-		for(i = 0; i < offset; i++)
-		{
-			res = ll_iter_next_nolock(it);
-			if(!res) { break; }
-		}
-
-		return res;
-	}
-	return NULL;
-}
-
-void *ll_iter_peek(const LL_ITER *it, int32_t offset)
-{
-	if(it && it->l && !it->l->flag)
-	{
-		cs_readlock(__func__, &((LL_ITER *)it)->l->lock);
-
-		LL_NODE *n = it->cur;
-		int32_t i;
-
-		for(i = 0; i < offset; i++)
-		{
-			if(n)
-				{ n = n->nxt; }
-			else
-				{ break; }
-		}
-		cs_readunlock(__func__, &((LL_ITER *)it)->l->lock);
-
-		if(!n)
-			{ return NULL; }
-		return n->obj;
-	}
-	return NULL;
-}
-
 void ll_iter_reset(LL_ITER *it)
 {
 	if(it)
@@ -558,31 +516,6 @@ void ll_remove_data(LLIST *l, void *obj)
 	}
 }
 
-// removes all elements from l where elements are in elements_to_remove
-int32_t ll_remove_all(LLIST *l, const LLIST *elements_to_remove)
-{
-	int32_t count = 0;
-	LL_ITER it1 = ll_iter_create(l);
-	LL_ITER it2 = ll_iter_create((LLIST *) elements_to_remove);
-
-	const void *data1, *data2;
-	while((data1 = ll_iter_next(&it1)))
-	{
-		ll_iter_reset(&it2);
-		while((data2 = ll_iter_next(&it2)))
-		{
-			if(data1 == data2)
-			{
-				ll_iter_remove(&it1);
-				count++;
-				break;
-			}
-		}
-	}
-
-	return count;
-}
-
 /* Returns an array with all elements sorted, the amount of elements is stored in size. We do not sort the original linked list
    as this might harm running iterations. Furthermore, we need the array anyway for qsort() to work. Remember to free() the result. */
 void **ll_sort(const LLIST *l, void *compare, int32_t *size)
@@ -666,25 +599,6 @@ void *ll_li_next(LL_LOCKITER *li)
 		return ll_iter_next_nolock(&li->it);
 	}
 	return NULL;
-}
-
-LLIST *ll_clone(LLIST *l, uint32_t copysize)
-{
-	if(!l || l->flag) { return NULL; }
-
-	LLIST *cloned = ll_create(l->lock.name);
-	LL_LOCKITER *li = ll_li_create(l, 0);
-	void *data;
-	while((data = ll_li_next(li)))
-	{
-		void *new_data;
-		if(!cs_malloc(&new_data, copysize))
-			{ break; }
-		memcpy(new_data, data, copysize);
-		ll_append_nolock(cloned, new_data);
-	}
-	ll_li_destroy(li);
-	return cloned;
 }
 
 void *ll_remove_first(LLIST *l)

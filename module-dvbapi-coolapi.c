@@ -625,10 +625,6 @@ int32_t coolapi_remove_filter(int32_t fd, int32_t num)
 		coolapi_check_error("cnxt_dmx_channel_suspend", result);
 		result = cnxt_dmx_channel_detach_filter(channel, filter_item->filter);
 		coolapi_check_error("cnxt_dmx_channel_detach_filter", result);
-#if 0
-		result = cnxt_dmx_close_filter(filter_item->filter);
-		coolapi_check_error("cnxt_dmx_close_filter", result);
-#endif
 		filter = filter_item->filter;
 		remove_filter(filter_item);
 		handle_item->allocated_filters--;
@@ -660,11 +656,6 @@ int32_t coolapi_remove_filter(int32_t fd, int32_t num)
 
 		result = cnxt_dmx_channel_detach(channel, 0xB, 0, handle_item->buffer1);
 		coolapi_check_error("cnxt_dmx_channel_detach", result);
-
-#if 0
-		result = cnxt_dmx_channel_close(channel);
-		coolapi_check_error("cnxt_dmx_channel_close", result);
-#endif
 
 		result = cnxt_cbuf_close(handle_item->buffer2);
 		coolapi_check_error("cnxt_cbuf_close", result);

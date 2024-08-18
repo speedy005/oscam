@@ -22,22 +22,6 @@ void cs_lock_create(const char *n, CS_MUTEX_LOCK *l, const char *name, uint32_t 
 #endif
 }
 
-/**
- * creates a lock
- **/
-void cs_lock_create_nolog(const char *n, CS_MUTEX_LOCK *l, const char *name, uint32_t timeout_ms)
-{
-	memset(l, 0, sizeof(CS_MUTEX_LOCK));
-	l->timeout = timeout_ms / 1000;
-	l->name = name;
-	SAFE_MUTEX_INIT_NOLOG_R(&l->lock, NULL, n);
-	__cs_pthread_cond_init(n, &l->writecond);
-	__cs_pthread_cond_init(n, &l->readcond);
-#ifdef WITH_MUTEXDEBUG
-	cs_log_dbg(D_TRACE, "lock %s created", name);
-#endif
-}
-
 void cs_lock_destroy(const char *pn, CS_MUTEX_LOCK *l)
 {
 	if(!l || !l->name || l->flag) { return; }

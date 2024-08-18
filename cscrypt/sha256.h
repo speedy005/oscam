@@ -57,15 +57,6 @@ void mbedtls_sha256_init( mbedtls_sha256_context *ctx );
 void mbedtls_sha256_free( mbedtls_sha256_context *ctx );
 
 /**
- * \brief          Clone (the state of) a SHA-256 context
- *
- * \param dst      The destination context
- * \param src      The context to be cloned
- */
-void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
-						   const mbedtls_sha256_context *src );
-
-/**
  * \brief          SHA-256 context setup
  *
  * \param ctx      context to be initialized
@@ -100,16 +91,6 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * \brief          Output = SHA-256( input buffer )
- *
- * \param input    buffer holding the  data
- * \param ilen     length of the input data
- * \param output   SHA-224/256 checksum result
- * \param is224    0 = use SHA256, 1 = use SHA224
- */
-void mbedtls_sha256( const unsigned char *input, size_t ilen, unsigned char output[32], int is224 );
 
 /**
  * \brief          Checkup routine

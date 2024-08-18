@@ -632,20 +632,6 @@ uint32_t get_reader_prid(struct s_reader *rdr, int32_t j)
 {
 	return b2i(3, &rdr->prid[j][1]);
 }
-//uint32_t get_reader_prid(struct s_reader *rdr, int32_t j) {
-//  uint32_t prid;
-//  if (!is_cascading_reader(rdr)) { // Real cardreaders have 4-byte Providers
-//      prid = b2i(4, &rdr->prid[j][0]);
-//      //prid = (rdr->prid[j][0] << 24) | (rdr->prid[j][1] << 16)
-//      //      | (rdr->prid[j][2] << 8) | (rdr->prid[j][3] & 0xFF);
-//  } else { // Cascading/Network-reader 3-bytes Providers
-//      prid = b2i(3, &rdr->prid[j][0]);
-//      //prid = (rdr->prid[j][0] << 16) | (rdr->prid[j][1] << 8)
-//      //      | (rdr->prid[j][2] & 0xFF);
-//
-//  }
-//  return prid;
-//}
 
 void copy_good_sids(LLIST *dst, LLIST *src)
 {
@@ -870,13 +856,6 @@ int32_t equal_providers(struct cc_card *card1, struct cc_card *card2)
 		if(!prov2) { break; }
 	}
 	return (prov1 == NULL);
-}
-
-int32_t is_au_card(struct cc_card *card)
-{
-	if(card && card->origin_reader)
-		{ return !card->origin_reader->audisabled && cc_UA_valid(card->hexserial); }
-	return 0;
 }
 
 void merge_sids(struct cc_card *carddst, struct cc_card *cardsrc)
@@ -1122,15 +1101,6 @@ int32_t find_reported_card(struct cc_card *card1)
 }
 
 /**
-* Server:
-* Adds a cccam-carddata buffer to the list of reported carddatas
-*/
-void cc_add_reported_carddata(LLIST *reported_carddatas, struct cc_card *card)
-{
-	ll_append(reported_carddatas, card);
-}
-
-/**
  * adds the card to the list of the new reported carddatas - this is the new sharelist
  * if this card is not already reported, we send them to the clients
  * if this card is already reported, find_reported_card throws the "origin" card away
@@ -1148,7 +1118,7 @@ void report_card(struct cc_card *card, LLIST *new_reported_carddatas, LLIST *new
 
 		card_added_count++;
 	}
-	cc_add_reported_carddata(new_reported_carddatas, card);
+	ll_append(new_reported_carddatas, card);
 }
 
 

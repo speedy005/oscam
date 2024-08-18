@@ -17,7 +17,6 @@ void load_stat_from_file(void);
 void lb_destroy_stats(struct s_reader *rdr);
 void send_reader_stat(struct s_reader *rdr, ECM_REQUEST *er, struct s_ecm_answer *ea, int8_t rc);
 void stat_get_best_reader(ECM_REQUEST *er);
-void lb_mark_last_reader(ECM_REQUEST *er);
 void check_lb_auto_betatunnel_mode(ECM_REQUEST *er);
 uint32_t lb_auto_timeout(ECM_REQUEST *er, uint32_t ctimeout);
 bool lb_check_auto_betatunnel(ECM_REQUEST *er, struct s_reader *rdr);

@@ -61,7 +61,6 @@
 void IO_Serial_Flush(struct s_reader *reader);
 
 /* Initialization and closing */
-bool IO_Serial_InitPnP(struct s_reader *reader);
 int32_t IO_Serial_Close(struct s_reader *reader);
 
 /* Transmission properties */

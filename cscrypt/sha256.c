@@ -70,11 +70,6 @@ void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
 	mbedtls_zeroize( ctx, sizeof( mbedtls_sha256_context ) );
 }
 
-void mbedtls_sha256_clone( mbedtls_sha256_context *dst, const mbedtls_sha256_context *src )
-{
-	*dst = *src;
-}
-
 /*
  * SHA-256 context setup
  */
@@ -300,18 +295,4 @@ void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32
 
 	if( ctx->is224 == 0 )
 		PUT_UINT32_BE( ctx->state[7], output, 28 );
-}
-
-/*
- * output = SHA-256( input buffer )
- */
-void mbedtls_sha256( const unsigned char *input, size_t ilen, unsigned char output[32], int is224 )
-{
-	mbedtls_sha256_context ctx;
-
-	mbedtls_sha256_init( &ctx );
-	mbedtls_sha256_starts( &ctx, is224 );
-	mbedtls_sha256_update( &ctx, input, ilen );
-	mbedtls_sha256_finish( &ctx, output );
-	mbedtls_sha256_free( &ctx );
 }

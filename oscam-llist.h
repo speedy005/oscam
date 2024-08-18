@@ -50,9 +50,6 @@ void **ll_sort(const LLIST *l, void *compare, int32_t *size); // sorts the list,
 LL_NODE *ll_append(LLIST *l, void *obj);                      // append obj to llist
 LL_NODE *ll_prepend(LLIST *l, void *obj);                     // prepend obj to llist
 
-// clones a list, duplicates data
-LLIST *ll_clone(LLIST *l, uint32_t copysize);
-
 // New type of lock, list is locked during iterate! create=lock, destroy=unlock
 LL_LOCKITER *ll_li_create(LLIST *l, int32_t writelock);
 void ll_li_destroy(LL_LOCKITER *li);
@@ -62,12 +59,10 @@ void *ll_li_next(LL_LOCKITER *li);
 LL_ITER ll_iter_create(LLIST *l);                      // return ptr to iterator obj
 void *ll_iter_next(LL_ITER *it);                       // iterate to and return next llnode obj, returns NULL at end
 void *ll_iter_next_remove(LL_ITER *it);                // iterate to and return next llnode obj, returns NULL at end, removing it
-void *ll_iter_peek(const LL_ITER *it, int32_t offset); // return obj at offset from iterator but do not iterate
 void ll_iter_reset(LL_ITER *it);                       // reset itrerator to first llnode
 void ll_iter_insert(LL_ITER *it, void *obj);           // insert obj at iterator node
 void *ll_iter_remove(LL_ITER *it);                     // remove llnode at iterator, returns ptr to the llnode obj removed
 void ll_iter_remove_data(LL_ITER *it);                 // remove llnode and free llnode obj
-void *ll_iter_move(LL_ITER *it, int32_t offset);       // moves the iterator position
 int32_t ll_iter_move_first(LL_ITER *it);               // moves an entry to top
 static inline int32_t ll_count(const LLIST *l)         // return number of items in list
 {
@@ -82,7 +77,6 @@ int32_t ll_contains(const LLIST *l, const void *obj);
 const void *ll_contains_data(const LLIST *l, const void *obj, uint32_t size);
 int32_t ll_remove(LLIST *l, const void *obj);
 void ll_remove_data(LLIST *l, void *obj);
-int32_t ll_remove_all(LLIST *l, const LLIST *elements_to_remove); // removes all elements from l where elements are in elements_to_remove
 
 void ll_putall(LLIST *dest, LLIST *src);
 
