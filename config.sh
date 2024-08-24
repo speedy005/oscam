@@ -440,7 +440,7 @@ make_config_mak() {
 }
 
 check_test() {
-	if [ "$(cat $tempfileconfig | grep "^#define $1 1$")" != "" ]; then
+	if [ "$(cat $configfile | grep "^#define $1 1$")" != "" ]; then
 		echo "on"
 	else
 		echo "off"
@@ -488,34 +488,32 @@ print_components() {
 	for i in $card_readers; do
 		printf "\t%-20s: %s\n" $i $(check_test "$i")
 	done
-
-	cp -f $tempfileconfig $configfile
 }
 
 menu_addons() {
 	${DIALOG} --checklist "\nChoose add-ons:\n " $height $width $listheight \
-		WEBIF				"Web Interface"							$(check_test "WEBIF") \
-		WEBIF_LIVELOG		"LiveLog"								$(check_test "WEBIF_LIVELOG") \
-		WEBIF_JQUERY		"Jquery onboard (if disabled webload)"	$(check_test "WEBIF_JQUERY") \
-		WITH_COMPRESS_WEBIF	"Compress webpages"						$(check_test "WITH_COMPRESS_WEBIF") \
-		WITH_SSL			"OpenSSL support"						$(check_test "WITH_SSL") \
-		HAVE_DVBAPI			"DVB API"								$(check_test "HAVE_DVBAPI") \
-		WITH_EXTENDED_CW	"DVB API EXTENDED CW API"				$(check_test "WITH_EXTENDED_CW") \
-		WITH_NEUTRINO		"Neutrino support"						$(check_test "WITH_NEUTRINO") \
-		READ_SDT_CHARSETS	"DVB API read-sdt charsets"				$(check_test "READ_SDT_CHARSETS") \
-		CS_ANTICASC			"Anti cascading"						$(check_test "CS_ANTICASC") \
-		WITH_DEBUG			"Debug messages"						$(check_test "WITH_DEBUG") \
-		MODULE_MONITOR		"Monitor"								$(check_test "MODULE_MONITOR") \
-		WITH_LB				"Loadbalancing"							$(check_test "WITH_LB") \
-		CS_CACHEEX			"Cache exchange"						$(check_test "CS_CACHEEX") \
-		CS_CACHEEX_AIO		"Cache exchange aio (depend on Cache exchange)"			$(check_test "CS_CACHEEX_AIO") \
-		CW_CYCLE_CHECK		"CW Cycle Check"						$(check_test "CW_CYCLE_CHECK") \
-		LCDSUPPORT			"LCD support"							$(check_test "LCDSUPPORT") \
-		LEDSUPPORT			"LED support"							$(check_test "LEDSUPPORT") \
-		CLOCKFIX			"Clockfix (disable on old systems!)"	$(check_test "CLOCKFIX") \
-		IPV6SUPPORT			"IPv6 support (experimental)"			$(check_test "IPV6SUPPORT") \
-		WITH_ARM_NEON		"ARM NEON (SIMD/MPE) support"			$(check_test "WITH_ARM_NEON") \
-		WITH_SIGNING		"Binary signing with X.509 certificate"	$(check_test "WITH_SIGNING") \
+		WEBIF				"Web Interface"									$(check_test "WEBIF") \
+		WEBIF_LIVELOG		"LiveLog"										$(check_test "WEBIF_LIVELOG") \
+		WEBIF_JQUERY		"Jquery onboard (if disabled webload)"			$(check_test "WEBIF_JQUERY") \
+		WITH_COMPRESS_WEBIF	"Compress webpages"								$(check_test "WITH_COMPRESS_WEBIF") \
+		WITH_SSL			"OpenSSL support"								$(check_test "WITH_SSL") \
+		HAVE_DVBAPI			"DVB API"										$(check_test "HAVE_DVBAPI") \
+		WITH_EXTENDED_CW	"DVB API EXTENDED CW API"						$(check_test "WITH_EXTENDED_CW") \
+		WITH_NEUTRINO		"Neutrino support"								$(check_test "WITH_NEUTRINO") \
+		READ_SDT_CHARSETS	"DVB API read-sdt charsets"						$(check_test "READ_SDT_CHARSETS") \
+		CS_ANTICASC			"Anti cascading"								$(check_test "CS_ANTICASC") \
+		WITH_DEBUG			"Debug messages"								$(check_test "WITH_DEBUG") \
+		MODULE_MONITOR		"Monitor"										$(check_test "MODULE_MONITOR") \
+		WITH_LB				"Loadbalancing"									$(check_test "WITH_LB") \
+		CS_CACHEEX			"Cache exchange"								$(check_test "CS_CACHEEX") \
+		CS_CACHEEX_AIO		"Cache exchange aio (depend on Cache exchange)"	$(check_test "CS_CACHEEX_AIO") \
+		CW_CYCLE_CHECK		"CW Cycle Check"								$(check_test "CW_CYCLE_CHECK") \
+		LCDSUPPORT			"LCD support"									$(check_test "LCDSUPPORT") \
+		LEDSUPPORT			"LED support"									$(check_test "LEDSUPPORT") \
+		CLOCKFIX			"Clockfix (disable on old systems!)"			$(check_test "CLOCKFIX") \
+		IPV6SUPPORT			"IPv6 support (experimental)"					$(check_test "IPV6SUPPORT") \
+		WITH_ARM_NEON		"ARM NEON (SIMD/MPE) support"					$(check_test "WITH_ARM_NEON") \
+		WITH_SIGNING		"Binary signing with X.509 certificate"			$(check_test "WITH_SIGNING") \
 		2> ${tempfile}
 
 	opt=${?}
@@ -632,9 +630,10 @@ config_dialog() {
 			Readers) menu_readers ;;
 			CardReaders) menu_card_readers ;;
 			Save)
-				print_components
+				cp -f $tempfileconfig $configfile
 				update_deps
 				write_enabled
+				print_components
 				exit 0
 			;;
 		esac
