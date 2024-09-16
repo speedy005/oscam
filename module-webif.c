@@ -1469,8 +1469,7 @@ static char *send_oscam_config_webif(struct templatevars *vars, struct uriparams
 	}
 
 	struct dirent **namelist;
-	int count;
-	count = scandir(cs_confdir, &namelist, 0, alphasort );
+	int count = scandir(cs_confdir, &namelist, 0, NULL);
 
 	if( count >= 0 )
 	{
