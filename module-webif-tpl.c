@@ -663,6 +663,7 @@ void tpl_checkDiskRevisions(void)
 		{
 			if(strcmp(".", entries[n]->d_name) == 0 || strcmp("..", entries[n]->d_name) == 0)
 			{
+				free(entries[n]);
 				continue;
 			}
 			snprintf(dirpath, 255, "%.31s%.31s", cfg.http_tpl, entries[n]->d_name);
@@ -680,6 +681,7 @@ void tpl_checkDiskRevisions(void)
 					tpl_checkOneDirDiskRevisions(subdir);
 				}
 			}
+			free(entries[n]);
 		}
 		free(entries);
 	}

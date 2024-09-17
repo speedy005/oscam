@@ -5312,11 +5312,13 @@ void event_handler(int32_t UNUSED(signal))
 	{
 		if(cs_strlen(entries[n]->d_name) < 7)
 		{
+			free(entries[n]);
 			continue;
 		}
 
 		if(strncmp(entries[n]->d_name, "pmt", 3) != 0 || strncmp(entries[n]->d_name + cs_strlen(entries[n]->d_name) - 4, ".tmp", 4) != 0)
 		{
+			free(entries[n]);
 			continue;
 		}
 
@@ -5332,6 +5334,7 @@ void event_handler(int32_t UNUSED(signal))
 		if(p == NULL)
 		{
 			cs_log_dbg(D_DVBAPI, "No matching S: line in oscam.dvbapi for pmtfile %s -> skip!", entries[n]->d_name);
+			free(entries[n]);
 			continue;
 		}
 #endif
@@ -5339,18 +5342,21 @@ void event_handler(int32_t UNUSED(signal))
 		if (!cs_strlen(TMPDIR))
 		{
 			cs_log_dbg(D_DVBAPI, "BUG! cs_strlen(TMPDIR)!!!\n");
+			free(entries[n]);
 			continue;
 		}
 
 		if (!cs_strlen(entries[n]->d_name))
 		{
 			cs_log_dbg(D_DVBAPI, "BUG! cs_strlen(entries[n]->d_name)!!!\n");
+			free(entries[n]);
 			continue;
 		}
 
 		if((cs_strlen(entries[n]->d_name) + cs_strlen(TMPDIR) - 1) > sizeof(dest))
 		{
 			cs_log_dbg(D_DVBAPI, "BUG! Sum of the (d_name + TMPDIR) = %u > sizeof(dest) !!!\n", (unsigned int)(cs_strlen(entries[n]->d_name) + cs_strlen(TMPDIR) - 1));
+			free(entries[n]);
 			continue;
 		}
 		else
@@ -5363,6 +5369,7 @@ void event_handler(int32_t UNUSED(signal))
 
 		if(pmt_fd < 0)
 		{
+			free(entries[n]);
 			continue;
 		}
 
@@ -5373,6 +5380,7 @@ void event_handler(int32_t UNUSED(signal))
 			{
 				cs_log("ERROR: Could not close PMT fd (errno=%d %s)", errno, strerror(errno));
 			}
+			free(entries[n]);
 			continue;
 		}
 
@@ -5397,6 +5405,7 @@ void event_handler(int32_t UNUSED(signal))
 			{
 				cs_log("ERROR: Could not close PMT fd (errno=%d %s)", errno, strerror(errno));
 			}
+			free(entries[n]);
 			continue;
 		}
 		cs_log_dbg(D_DVBAPI, "found pmt file %s", dest);
@@ -5413,6 +5422,7 @@ void event_handler(int32_t UNUSED(signal))
 		if(len < 1)
 		{
 			cs_log_dbg(D_DVBAPI, "pmt file %s have invalid len!", dest);
+			free(entries[n]);
 			continue;
 		}
 
@@ -5425,6 +5435,7 @@ void event_handler(int32_t UNUSED(signal))
 		if((len < 6) || ((len % 2) != 0) || ((len / 2) > sizeof(dest)))
 		{
 			cs_log_dbg(D_DVBAPI, "error parsing QboxHD pmt.tmp, incorrect length");
+			free(entries[n]);
 			continue;
 		}
 
@@ -5449,12 +5460,14 @@ void event_handler(int32_t UNUSED(signal))
 		if(len > sizeof(dest))
 		{
 			cs_log_dbg(D_DVBAPI, "event_handler() dest buffer is to small for pmt data!");
+			free(entries[n]);
 			continue;
 		}
 
 		if(len < 16)
 		{
 			cs_log_dbg(D_DVBAPI, "event_handler() received pmt is too small! (%d < 16 bytes!)", len);
+			free(entries[n]);
 			continue;
 		}
 
@@ -5477,6 +5490,7 @@ void event_handler(int32_t UNUSED(signal))
 			cs_strncpy(demux[demux_id].pmt_file, entries[n]->d_name, sizeof(demux[demux_id].pmt_file));
 			demux[demux_id].pmt_time = (time_t)pmt_info.st_mtime;
 		}
+		free(entries[n]);
 
 		if(cfg.dvbapi_pmtmode == 3)
 		{
@@ -7399,7 +7413,9 @@ bool select_csa_alt(ECM_REQUEST *er)
 void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 {
 	int32_t i, j, k, handled = 0;
+#ifdef MODULE_STREAMRELAY
 	uint8_t null_cw8[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+#endif
 	for(i = 0; i < MAX_DEMUX; i++)
 	{
 		uint32_t nocw_write = 0; // 0 = write cw, 1 = dont write cw to hardware demuxer
@@ -7742,8 +7758,8 @@ void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 
 		delayer(er, delay);
 
-		bool set_dvbapi_cw = true;
 #ifdef MODULE_STREAMRELAY
+		bool set_dvbapi_cw = true;
 		if(chk_ctab_ex(er->caid, &cfg.stream_relay_ctab) && cfg.stream_relay_enabled)
 		{
 			// streamserver set cw
@@ -7840,6 +7856,7 @@ void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 			}
 		}
 
+#ifdef MODULE_STREAMRELAY
 #ifdef WITH_EXTENDED_CW
 		if(!(set_dvbapi_cw || er->cw_ex.algo == CA_ALGO_AES128))
 #else
@@ -7855,6 +7872,7 @@ void dvbapi_send_dcw(struct s_client *client, ECM_REQUEST *er)
 				memcpy(demux[i].last_cw[0][1], er->cw + 8, 8);
 			}
 		}
+#endif
 
 		// reset idle-Time
 		client->last = time((time_t *)0); // ********* TO BE FIXED LATER ON ******
