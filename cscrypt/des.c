@@ -688,6 +688,21 @@ static inline void xxor(uint8_t *data, int32_t len, const uint8_t *v1, const uin
 	}
 }
 
+void des_ecb_encrypt(uint8_t* data, const uint8_t* key, int32_t len)
+{
+	uint32_t schedule[32];
+	int32_t i;
+
+	des_set_key(key, schedule);
+
+	len&=~7;
+
+	for(i=0; i<len; i+=8)
+	{
+		des(&data[i], schedule, 1);
+	}
+}
+
 void des_ecb_decrypt(uint8_t* data, const uint8_t* key, int32_t len)
 {
 	uint32_t schedule[32];
@@ -740,6 +755,50 @@ void des_cbc_decrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key, int32
 	}
 }
 
+void des_ede2_cbc_encrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key1, const uint8_t* key2, int32_t len)
+{
+	const uint8_t *civ = iv;
+	uint32_t schedule1[32], schedule2[32];
+	int32_t i;
+
+	des_set_key(key1, schedule1);
+	des_set_key(key2, schedule2);
+
+	len&=~7;
+
+	for(i=0; i<len; i+=8)
+	{
+		xxor(&data[i],8,&data[i],civ);
+		civ=&data[i];
+
+		des(&data[i], schedule1, 1);
+		des(&data[i], schedule2, 0);
+		des(&data[i], schedule1, 1);
+	}
+}
+
+void des_ede2_cbc_decrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key1, const uint8_t* key2, int32_t len)
+{
+	uint8_t civ[2][8];
+	uint32_t schedule1[32], schedule2[32];
+	int32_t i, n=0;
+
+	des_set_key(key1, schedule1);
+	des_set_key(key2, schedule2);
+
+	len&=~7;
+
+	memcpy(civ[n],iv,8);
+	for(i=0; i<len; i+=8,data+=8,n^=1)
+	{
+		memcpy(civ[1-n],data,8);
+		des(data, schedule1, 0);
+		des(data, schedule2, 1);
+		des(data, schedule1, 0);
+		xxor(data,8,data,civ[n]);
+	}
+}
+
 void des_ecb3_decrypt(uint8_t* data, const uint8_t* key)
 {
 	uint8_t desA[8];
@@ -756,4 +815,22 @@ void des_ecb3_decrypt(uint8_t* data, const uint8_t* key)
 	des(data, schedule1, 0);
 	des(data, schedule2, 1);
 	des(data, schedule1, 0);
+}
+
+void des_ecb3_encrypt(uint8_t* data, const uint8_t* key)
+{
+	uint8_t desA[8];
+	uint8_t desB[8];
+
+	uint32_t schedule1[32];
+	uint32_t schedule2[32];
+
+	memcpy(desA, key, 8);
+	des_set_key(desA, schedule1);
+	memcpy(desB, key+8, 8);
+	des_set_key(desB, schedule2);
+
+	des(data, schedule1, 1);
+	des(data, schedule2, 0);
+	des(data, schedule1, 1);
 }
