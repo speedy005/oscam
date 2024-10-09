@@ -63,6 +63,44 @@ void rc6_key_setup(unsigned char *K, int b, RC6KEY S)
 	}
 }
 
+void rc6_block_encrypt(unsigned int *pt, unsigned int *ct, int block_count, RC6KEY S)
+{
+	unsigned int A, B, C, D, t, u, x;
+	int i;
+
+	while(block_count > 0)
+	{
+		A = pt[0];
+		B = pt[1];
+		C = pt[2];
+		D = pt[3];
+		B += S[0];
+		D += S[1];
+		for(i = 2; i <= 2 * r; i += 2)
+		{
+			t = ROTL(B * (2 * B + 1), lgw);
+			u = ROTL(D * (2 * D + 1), lgw);
+			A = ROTL(A ^ t, u) + S[i];
+			C = ROTL(C ^ u, t) + S[i + 1];
+			x = A;
+			A = B;
+			B = C;
+			C = D;
+			D = x;
+		}
+		A += S[2 * r + 2];
+		C += S[2 * r + 3];
+		ct[0] = A;
+		ct[1] = B;
+		ct[2] = C;
+		ct[3] = D;
+
+		block_count--;
+		pt++;
+		ct++;
+	}
+}
+
 void rc6_block_decrypt(unsigned int *ct, unsigned int *pt, int block_count, RC6KEY S)
 {
 	unsigned int A, B, C, D, t, u, x;
