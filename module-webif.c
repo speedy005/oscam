@@ -7153,7 +7153,9 @@ static char *send_oscam_scanusb(struct templatevars * vars)
 	setActiveMenu(vars, MNU_READERS);
 #if !defined(__CYGWIN__)
 	FILE *fp;
-	char path[100];
+	char line[100];
+	uint8_t i;
+	char header[11], txt[13], entry[10], bit[8], scan[12], error[120];
 
 //						key    tool                 package       match   command
 	char *elems[] = {  "USB", "lsusb",             "usbutils",   "Bus ", "lsusb -v | egrep '^Bus|^ *iSerial|^ *iProduct'"
@@ -7162,9 +7164,8 @@ static char *send_oscam_scanusb(struct templatevars * vars)
 					, "PCSC", "pcsc_scan",         "pcsc-tools", ":",    "pcsc_scan -r"
 #endif
 					};
-	char header[11], txt[13], entry[10], bit[8], scan[12], error[120];
 
-	for (uint8_t i = 0; i < (sizeof(elems) / sizeof(elems[0])); i+=5)
+	for (i = 0; i < (sizeof(elems) / sizeof(elems[0])); i+=5)
 	{
 		snprintf(header, sizeof(header), "%sHEADER", elems[i]); //key
 		snprintf(txt, sizeof(txt), "%s Devices", elems[i]); //key
@@ -7175,7 +7176,7 @@ static char *send_oscam_scanusb(struct templatevars * vars)
 
 		tpl_addVar(vars, TPLADD, header, txt);
 		fp = popen(elems[i + 4], "r"); //command
-		if(!fgets(path, sizeof(path) - 1, fp) || !fp)
+		if(!fgets(line, sizeof(line) - 1, fp) || !fp)
 		{
 			tpl_addVar(vars, TPLADD, entry, error);
 			tpl_addVar(vars, TPLADD, bit, tpl_getTpl(vars, scan));
@@ -7184,18 +7185,18 @@ static char *send_oscam_scanusb(struct templatevars * vars)
 		{
 			do{
 				tpl_addVar(vars, TPLADD, "USBENTRYCLASS", "");
-				if(strstr(path, elems[i + 3])) //match
+				if(strstr(line, elems[i + 3])) //match
 				{
-					tpl_addVar(vars, TPLADD, entry, path);
+					tpl_addVar(vars, TPLADD, entry, line);
 					tpl_addVar(vars, TPLADD, "USBENTRYCLASS", "CLASS=\"scanusbsubhead\"");
 				}
 				else
 				{
-					tpl_printf(vars, TPLADD, entry, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%s", path);
+					tpl_printf(vars, TPLADD, entry, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%s", line);
 				}
 				tpl_addVar(vars, TPLAPPEND, bit, tpl_getTpl(vars, scan));
 			}
-			while(fgets(path, sizeof(path) - 1, fp) != NULL);
+			while(fgets(line, sizeof(line) - 1, fp) != NULL);
 		}
 		pclose(fp);
 	}
