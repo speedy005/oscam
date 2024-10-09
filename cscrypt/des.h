@@ -15,11 +15,16 @@
 	void des(uint8_t* data, const uint32_t* schedule, int8_t do_encrypt);
 
 	// these functions take a 8-byte des key and crypt data of any length ("len")
+	void des_ecb_encrypt(uint8_t* data, const uint8_t* key, int32_t len);
 	void des_ecb_decrypt(uint8_t* data, const uint8_t* key, int32_t len);
 
 	void des_cbc_encrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key, int32_t len);
 	void des_cbc_decrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key, int32_t len);
 
+	void des_ede2_cbc_encrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key1, const uint8_t* key2, int32_t len);
+	void des_ede2_cbc_decrypt(uint8_t* data, const uint8_t* iv, const uint8_t* key1, const uint8_t* key2, int32_t len);
+
+	void des_ecb3_encrypt(uint8_t* data, const uint8_t* key);
 	void des_ecb3_decrypt(uint8_t* data, const uint8_t* key);
 
 #endif
