@@ -93,6 +93,16 @@ extern "C" {
 #endif
 
 /**
+ * \brief          Output = SHA-256( input buffer )
+ *
+ * \param input    buffer holding the  data
+ * \param ilen     length of the input data
+ * \param output   SHA-224/256 checksum result
+ * \param is224    0 = use SHA256, 1 = use SHA224
+ */
+void mbedtls_sha256( const unsigned char *input, size_t ilen, unsigned char output[32], int is224 );
+
+/**
  * \brief          Checkup routine
  *
  * \return         0 if successful, or 1 if the test failed
