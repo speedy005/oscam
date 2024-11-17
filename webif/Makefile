@@ -24,6 +24,8 @@ pages.c: pages_gen
 pages_gen: Makefile pages_gen.c
 	$(SAY) "HOSTCC	webif/$@"
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) ../minilzo/minilzo.c pages_gen.c -o $@
+	$(Q)sed 's/^\s+//g' -i pages_gen.c
+	$(Q)sed 's/^"\s+/"/g' -i pages_gen.c
 
 clean:
 	@-for FILE in pages_gen pages.dep pages.bin pages.bin.compressed pages.h pages.c is_defined.txt; do \
