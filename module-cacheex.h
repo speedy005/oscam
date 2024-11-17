@@ -33,8 +33,6 @@ extern void cacheex_load_config_file(void);
 static inline bool cacheex_reader(struct s_reader *rdr) { return rdr ? (rdr->cacheex.mode == 1 ? 1 : 0) : 0; }
 extern bool cacheex_is_match_alias(struct s_client *cl, ECM_REQUEST *er);
 void cacheex_set_csp_lastnode(ECM_REQUEST *er);
-void cacheex_set_cacheex_src(ECM_REQUEST *ecm, struct s_client *cl);
-void cacheex_init_cacheex_src(ECM_REQUEST *ecm, ECM_REQUEST *er);
 void cacheex_free_csp_lastnodes(ECM_REQUEST *er);
 void checkcache_process_thread_start(void);
 void cacheex_push_out(struct s_client *cl, ECM_REQUEST *er);
@@ -48,7 +46,6 @@ void cacheex_mode1_delay(ECM_REQUEST *er);
 void cacheex_timeout(ECM_REQUEST *er);
 #ifdef CS_CACHEEX_AIO
 char* cxaio_ftab_to_buf(FTAB *lg_only_ftab);
-FTAB caidtab2ftab(CAIDTAB *ctab);
 void caidtab2ftab_add(CAIDTAB *lgonly_ctab, FTAB *lgonly_tab);
 #define CACHEEX_FEATURES 127
 #endif
@@ -56,7 +53,6 @@ void caidtab2ftab_add(CAIDTAB *lgonly_ctab, FTAB *lgonly_tab);
 static inline void cacheex_init(void) { }
 static inline void cacheex_clear_account_stats(struct s_auth *UNUSED(account)) { }
 static inline void cacheex_clear_client_stats(struct s_client *UNUSED(client)) { }
-static inline void cacheex_load_config_file(void) { }
 static inline bool cacheex_reader(struct s_reader *UNUSED(rdr)) { return false; }
 static inline bool cacheex_is_match_alias(struct s_client *UNUSED(cl), ECM_REQUEST *UNUSED(er)) { return false; }
 static inline void cacheex_set_csp_lastnode(ECM_REQUEST *UNUSED(er)) { }

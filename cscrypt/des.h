@@ -4,16 +4,6 @@
 	// sets parity for a 8-byte des key
 	void des_set_odd_parity(uint8_t* key);
 
-	// checks parity for a 8-byte des key
-	// returns 0 if parity is not ok
-	// returns 1 if parity is ok
-	int8_t check_parity(const uint8_t* key);
-
-	// matches the given 8-byte des key against known weak keys
-	// return 0 if key is not weak
-	// return 1 if key is weak
-	int8_t des_is_weak_key(const uint8_t* key);
-
 	// expands the given 8-byte des key "key"
 	// into "shedule", which must be of type "uint32_t schedule[32]"
 	// always returns 0

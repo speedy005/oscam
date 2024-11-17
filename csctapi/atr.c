@@ -211,18 +211,6 @@ int32_t ATR_GetConvention(ATR *atr, int32_t *convention)
 	return (ATR_OK);
 }
 
-int32_t ATR_GetSize(ATR *atr, uint32_t *size)
-{
-	(*size) = atr->length;
-	return (ATR_OK);
-}
-
-int32_t ATR_GetNumberOfProtocols(ATR *atr, uint32_t *number_protocols)
-{
-	(*number_protocols) = atr->pn;
-	return (ATR_OK);
-}
-
 int32_t ATR_GetProtocolType(ATR *atr, uint32_t number_protocol, unsigned char *protocol_type)
 {
 	if((number_protocol > atr->pn) || number_protocol < 1)
@@ -251,30 +239,12 @@ int32_t ATR_GetInterfaceByte(ATR *atr, uint32_t number, int32_t character, unsig
 
 int32_t ATR_GetIntegerValue(ATR *atr, int32_t name, unsigned char *value)
 {
-	int32_t ret;
-
-	if(name == ATR_INTEGER_VALUE_FI)
-	{
-		if(atr->ib[0][ATR_INTERFACE_BYTE_TA].present)
-		{
-			(*value) = (atr->ib[0][ATR_INTERFACE_BYTE_TA].value & 0xF0) >> 4;
-			ret = ATR_OK;
-		}
-		else
-		{
-			ret = ATR_NOT_FOUND;
-		}
-	}
-	else if(name == ATR_INTEGER_VALUE_DI)
+	if(name == ATR_INTEGER_VALUE_DI)
 	{
 		if(atr->ib[0][ATR_INTERFACE_BYTE_TA].present)
 		{
 			(*value) = (atr->ib[0][ATR_INTERFACE_BYTE_TA].value & 0x0F);
-			ret = ATR_OK;
-		}
-		else
-		{
-			ret = ATR_NOT_FOUND;
+			return ATR_OK;
 		}
 	}
 	else if(name == ATR_INTEGER_VALUE_II)
@@ -282,35 +252,7 @@ int32_t ATR_GetIntegerValue(ATR *atr, int32_t name, unsigned char *value)
 		if(atr->ib[0][ATR_INTERFACE_BYTE_TB].present)
 		{
 			(*value) = (atr->ib[0][ATR_INTERFACE_BYTE_TB].value & 0x60) >> 5;
-			ret = ATR_OK;
-		}
-		else
-		{
-			ret = ATR_NOT_FOUND;
-		}
-	}
-	else if(name == ATR_INTEGER_VALUE_PI1)
-	{
-		if(atr->ib[0][ATR_INTERFACE_BYTE_TB].present)
-		{
-			(*value) = (atr->ib[0][ATR_INTERFACE_BYTE_TB].value & 0x1F);
-			ret = ATR_OK;
-		}
-		else
-		{
-			ret = ATR_NOT_FOUND;
-		}
-	}
-	else if(name == ATR_INTEGER_VALUE_PI2)
-	{
-		if(atr->ib[1][ATR_INTERFACE_BYTE_TB].present)
-		{
-			(*value) = atr->ib[1][ATR_INTERFACE_BYTE_TB].value;
-			ret = ATR_OK;
-		}
-		else
-		{
-			ret = ATR_NOT_FOUND;
+			return ATR_OK;
 		}
 	}
 	else if(name == ATR_INTEGER_VALUE_N)
@@ -318,33 +260,17 @@ int32_t ATR_GetIntegerValue(ATR *atr, int32_t name, unsigned char *value)
 		if(atr->ib[0][ATR_INTERFACE_BYTE_TC].present)
 		{
 			(*value) = atr->ib[0][ATR_INTERFACE_BYTE_TC].value;
-			ret = ATR_OK;
-		}
-		else
-		{
-			ret = ATR_NOT_FOUND;
+			return ATR_OK;
 		}
 	}
-	else
-	{
-		ret = ATR_NOT_FOUND;
-	}
-
-	return ret;
+	return ATR_NOT_FOUND;
 }
 
 int32_t ATR_GetParameter(ATR *atr, int32_t name, uint32_t *parameter)
 {
-	unsigned char FI, DI, II, PI1, PI2, N;
+	unsigned char DI, II, N;
 	static const uint32_t atr_i_table[4] = {25, 50, 100, 0};
-	if(name == ATR_PARAMETER_F)
-	{
-		if(ATR_GetIntegerValue(atr, ATR_INTEGER_VALUE_FI, &FI) != ATR_OK)
-			{ FI = ATR_DEFAULT_FI; }
-		(*parameter) = (double)(atr_f_table[FI]);
-		return (ATR_OK);
-	}
-	else if(name == ATR_PARAMETER_D)
+	if(name == ATR_PARAMETER_D)
 	{
 		if(ATR_GetIntegerValue(atr, ATR_INTEGER_VALUE_DI, &DI) == ATR_OK)
 			{ (*parameter) = (double)(atr_d_table[DI]); }
@@ -358,16 +284,6 @@ int32_t ATR_GetParameter(ATR *atr, int32_t name, uint32_t *parameter)
 			{ (*parameter) = (double)(atr_i_table[II]); }
 		else
 			{ (*parameter) = ATR_DEFAULT_I; }
-		return (ATR_OK);
-	}
-	else if(name == ATR_PARAMETER_P)
-	{
-		if(ATR_GetIntegerValue(atr, ATR_INTEGER_VALUE_PI2, &PI2) == ATR_OK)
-			{ (*parameter) = (double) PI2; }
-		else if(ATR_GetIntegerValue(atr, ATR_INTEGER_VALUE_PI1, &PI1) == ATR_OK)
-			{ (*parameter) = (double) PI1; }
-		else
-			{ (*parameter) = (double) ATR_DEFAULT_P; }
 		return (ATR_OK);
 	}
 	else if(name == ATR_PARAMETER_N)
@@ -430,24 +346,4 @@ int32_t ATR_GetRaw(ATR *atr, unsigned char *buffer, uint32_t *length)
 	return ATR_OK;
 }
 
-int32_t ATR_GetCheckByte(ATR *atr, unsigned char *check_byte)
-{
-	if(!((atr->TCK).present))
-		{ return (ATR_NOT_FOUND); }
-
-	(*check_byte) = (atr->TCK).value;
-	return (ATR_OK);
-}
-
-int32_t ATR_GetFsMax(ATR *atr, uint32_t *fsmax)
-{
-	unsigned char FI;
-
-	if(ATR_GetIntegerValue(atr, ATR_INTEGER_VALUE_FI, &FI) == ATR_OK)
-		{ (*fsmax) = atr_fs_table[FI]; }
-	else
-		{ (*fsmax) = atr_fs_table[1]; }
-
-	return (ATR_OK);
-}
 #endif

@@ -110,7 +110,6 @@ int32_t ATR_InitFromArray(ATR *atr, const unsigned char buffer[ATR_MAX_SIZE], ui
 
 /* General smartcard characteristics */
 int32_t ATR_GetConvention(ATR *atr, int32_t *convention);
-int32_t ATR_GetNumberOfProtocols(ATR *atr, uint32_t *number_protocols);
 int32_t ATR_GetProtocolType(ATR *atr, uint32_t number_protocol, unsigned char *protocol_type);
 
 /* ATR parameters and integer values */
@@ -118,12 +117,9 @@ int32_t ATR_GetInterfaceByte(ATR *atr, uint32_t number, int32_t character, unsig
 int32_t ATR_GetIntegerValue(ATR *atr, int32_t name, unsigned char *value);
 int32_t ATR_GetParameter(ATR *atr, int32_t name, uint32_t *parameter);
 int32_t ATR_GetHistoricalBytes(ATR *atr, unsigned char *hist, uint32_t *length);
-int32_t ATR_GetCheckByte(ATR *atr, unsigned char *check_byte);
-int32_t ATR_GetFsMax(ATR *atr, uint32_t *fsmax);
 
 /* Raw ATR retrieving */
 int32_t ATR_GetRaw(ATR *atr, unsigned char *buffer, uint32_t *length);
-int32_t ATR_GetSize(ATR *atr, uint32_t *size);
 
 /* Invert order of bits in a byte: b7->b0, b0->b7 */
 #ifndef INVERT_BYTE

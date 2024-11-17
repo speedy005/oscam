@@ -53,8 +53,8 @@ typedef struct nds_atr
 extern int32_t cw_is_valid(uint8_t *cw);
 extern void cAES_SetKey(struct s_reader *reader, const uint8_t *key);
 
-extern void __xxor(uint8_t *data, int32_t len, const uint8_t *v1, const uint8_t *v2);
-#define xor16(v1,v2,d) __xxor((d),16,(v1),(v2))
+extern void __xxor16(uint8_t *data, const uint8_t *v1, const uint8_t *v2);
+#define xor16(v1,v2,d) __xxor16((d),(v1),(v2))
 #define val_by2on3(x) ((0xaaab*(x))>>16) // fixed point *2/3
 
 extern void cCamCryptVG_SetSeed(struct s_reader *reader);

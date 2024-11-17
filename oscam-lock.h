@@ -11,7 +11,6 @@ void cs_rwlock_int(const char *n, CS_MUTEX_LOCK *l, int8_t type);
 void cs_rwunlock_int(const char *n, CS_MUTEX_LOCK *l, int8_t type);
 int8_t cs_try_rwlock_int(const char *n, CS_MUTEX_LOCK *l, int8_t type);
 
-void cs_lock_create_nolog(const char *n, CS_MUTEX_LOCK *l, const char *name, uint32_t timeout_ms);
 void cs_rwlock_int_nolog(const char *n, CS_MUTEX_LOCK *l, int8_t type);
 void cs_rwunlock_int_nolog(const char *n, CS_MUTEX_LOCK *l, int8_t type);
 

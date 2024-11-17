@@ -305,30 +305,9 @@ void __cs_pthread_cond_init(const char *n, pthread_cond_t *cond)
 {
 	pthread_condattr_t attr;
 	SAFE_CONDATTR_INIT_R(&attr, n); // init condattr with defaults
-#if 0
-#if defined(HAVE_pthread_condattr_setclock)
-	enum clock_type ctype = cs_getclocktype();
-	SAFE_CONDATTR_SETCLOCK_R(&attr, (ctype == CLOCK_TYPE_MONOTONIC) ? CLOCK_MONOTONIC : CLOCK_REALTIME, n);
-#endif
-#endif
 	SAFE_COND_INIT_R(cond, &attr, n); // init thread with right clock assigned
 	pthread_condattr_destroy(&attr);
 }
-
-void __cs_pthread_cond_init_nolog(const char *n, pthread_cond_t *cond)
-{
-	pthread_condattr_t attr;
-	SAFE_CONDATTR_INIT_NOLOG_R(&attr, n); // init condattr with defaults
-#if 0
-#if defined(HAVE_pthread_condattr_setclock)
-	enum clock_type ctype = cs_getclocktype();
-	SAFE_CONDATTR_SETCLOCK_NOLOG_R(&attr, (ctype == CLOCK_TYPE_MONOTONIC) ? CLOCK_MONOTONIC : CLOCK_REALTIME, n);
-#endif
-#endif
-	SAFE_COND_INIT_NOLOG_R(cond, &attr, n); // init thread with right clock assigned
-	pthread_condattr_destroy(&attr);
-}
-
 
 void sleepms_on_cond(const char *n, pthread_mutex_t *mutex, pthread_cond_t *cond, uint32_t msec)
 {
@@ -407,37 +386,4 @@ void cs_gettime(struct timespec *ts)
 	ts->tv_nsec = tv.tv_usec * 1000;
 	clock_type = CLOCK_TYPE_REALTIME;
 	return;
-#if 0
-#if !defined(CLOCKFIX) || (!defined(CLOCK_MONOTONIC) && !defined(__MACH__))
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	ts->tv_sec = tv.tv_sec;
-	ts->tv_nsec = tv.tv_usec * 1000;
-	clock_type = CLOCK_TYPE_REALTIME;
-	return;
-#elif defined (__MACH__)
-// OS X does not have clock_gettime, use clock_get_time
-	clock_serv_t cclock;
-	mach_timespec_t mts;
-	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-	clock_get_time(cclock, &mts);
-	mach_port_deallocate(mach_task_self(), cclock);
-	ts->tv_sec = mts.tv_sec;
-	ts->tv_nsec = mts.tv_nsec;
-	clock_type = CLOCK_TYPE_REALTIME;
-#else
-	if (clock_type == CLOCK_TYPE_REALTIME) // monotonic returned error
-	{
-		clock_gettime(CLOCK_REALTIME, ts);
-		return;
-	}
-	int32_t	ret = clock_gettime(CLOCK_MONOTONIC, ts);
-	clock_type = CLOCK_TYPE_MONOTONIC;
-	if ((ret < 0 && errno == EINVAL)) // Error fetching time from this source (Shouldn't happen on modern Linux)
-	{
-		clock_gettime(CLOCK_REALTIME, ts);
-		clock_type = CLOCK_TYPE_REALTIME;
-	}
-#endif
-#endif
 }

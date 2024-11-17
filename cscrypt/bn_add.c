@@ -197,7 +197,6 @@ int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 	bp = b->d;
 	rp = r->d;
 
-#if 1
 	carry = 0;
 	for(i = 0; i < min; i++)
 	{
@@ -219,13 +218,6 @@ int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 #endif
 		*(rp++) = t1 & BN_MASK2;
 	}
-#else
-	carry = bn_sub_words(rp, ap, bp, min);
-	ap += min;
-	bp += min;
-	rp += min;
-	i = min;
-#endif
 	if(carry)  /* subtracted */
 	{
 		while(i < max)
@@ -237,9 +229,6 @@ int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 			if(t1 > t2) { break; }
 		}
 	}
-#if 0
-	memcpy(rp, ap, sizeof(*rp) * (max - i));
-#else
 	if(rp != ap)
 	{
 		for(;;)
@@ -256,7 +245,6 @@ int BN_usub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
 			ap += 4;
 		}
 	}
-#endif
 
 	r->top = max;
 	bn_fix_top(r);

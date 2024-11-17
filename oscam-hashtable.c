@@ -59,14 +59,6 @@ void *get_first_node_list(void *ll)
 	return tommy_list_head(ll);
 }
 
-void *get_first_elem_list(void *ll)
-{
-	if (tommy_list_head(ll))
-		return tommy_list_head(ll)->data;
-	else
-		return NULL;
-}
-
 void *get_data_from_node(void *node)
 {
 	if (node)

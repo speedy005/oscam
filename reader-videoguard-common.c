@@ -444,34 +444,12 @@ static void swap_lb(uint8_t *buff, int32_t len)
 	}
 }
 
-void __xxor(uint8_t *data, int32_t len, const uint8_t *v1, const uint8_t *v2)
+void __xxor16(uint8_t *data, const uint8_t *v1, const uint8_t *v2)
 {
 	uint32_t i;
-	switch(len)
+	for(i = 0; i < 16; ++i)
 	{
-		case 16:
-			for(i = 0; i < 16; ++i)
-			{
-				data[i] = v1[i] ^ v2[i];
-			}
-			break;
-
-		case 8:
-			for(i = 0; i < 8; ++i)
-			{
-				data[i] = v1[i] ^ v2[i];
-			}
-			break;
-
-		case 4:
-			for(i = 0; i < 4; ++i)
-			{
-				data[i] = v1[i] ^ v2[i];
-			}
-			break;
-
-		default:
-			while(len--) { *data++ = *v1++ ^ *v2++; }
+		data[i] = v1[i] ^ v2[i];
 	}
 }
 

@@ -583,32 +583,6 @@ exit_werr:
 	if(patch != NULL) free(patch);
 }
 
-void ReasmEMM82(uint8_t *emm)
-{
-	uint16_t dataLen = (uint16_t) (((emm[1] & 0xF) << 8) | emm[2]) + 5;
-	uint8_t emmbuf[dataLen];
-	uint32_t crc;
-
-	emmbuf[0] = 0x91;
-	emmbuf[1] = (uint8_t)(((dataLen - 3) >> 8) | 0x80);
-	emmbuf[2] = (uint8_t)(dataLen - 3) & 0xFF;
-	emmbuf[3] = ((emm[7] + 1) & 0x0F);
-	emmbuf[4] = 0;
-
-	memcpy(&emmbuf[5], &emm[7], dataLen);
-
-	emmbuf[5] += 1;
-
-	crc = crc32(-1, emmbuf, dataLen - 4);
-
-	emmbuf[dataLen - 1] = (uint8_t) ((crc >> 24) & 0xFF);
-	emmbuf[dataLen - 2] = (uint8_t) ((crc >> 16) & 0xFF);
-	emmbuf[dataLen - 3] = (uint8_t) ((crc >> 8) & 0xFF);
-	emmbuf[dataLen - 4] = (uint8_t) (crc & 0xFF);
-
-	Drecrypt2OverEMM(emmbuf);
-}
-
 uint8_t dre_initial_snippet[3694] =
 {
 	0x6F, 0xF0, 0x0E, 0x0D, 0x00, 0x00, 0x18, 0x75, 0xFF, 0x75, 0x63, 0x72, 0x2E, 0x2C, 0x17, 0x00,

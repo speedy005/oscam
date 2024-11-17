@@ -64,72 +64,6 @@
 #include "openssl_mods.h"
 #include "bn_lcl.h"
 
-/* The old slow way */
-#if 0
-int BN_div(BIGNUM *dv, BIGNUM *rem, const BIGNUM *m, const BIGNUM *d,
-		   BN_CTX *ctx)
-{
-	int i, nm, nd;
-	int ret = 0;
-	BIGNUM *D;
-
-	bn_check_top(m);
-	bn_check_top(d);
-	if(BN_is_zero(d))
-	{
-		return (0);
-	}
-
-	if(BN_ucmp(m, d) < 0)
-	{
-		if(rem != NULL)
-		{
-			if(BN_copy(rem, m) == NULL) { return (0); }
-		}
-		if(dv != NULL) { BN_zero(dv); }
-		return (1);
-	}
-
-	BN_CTX_start(ctx);
-	D = BN_CTX_get(ctx);
-	if(dv == NULL) { dv = BN_CTX_get(ctx); }
-	if(rem == NULL) { rem = BN_CTX_get(ctx); }
-	if(D == NULL || dv == NULL || rem == NULL)
-		{ goto end; }
-
-	nd = BN_num_bits(d);
-	nm = BN_num_bits(m);
-	if(BN_copy(D, d) == NULL) { goto end; }
-	if(BN_copy(rem, m) == NULL) { goto end; }
-
-	/* The next 2 are needed so we can do a dv->d[0]|=1 later
-	 * since BN_lshift1 will only work once there is a value :-) */
-	BN_zero(dv);
-	bn_wexpand(dv, 1);
-	dv->top = 1;
-
-	if(!BN_lshift(D, D, nm - nd)) { goto end; }
-	for(i = nm - nd; i >= 0; i--)
-	{
-		if(!BN_lshift1(dv, dv)) { goto end; }
-		if(BN_ucmp(rem, D) >= 0)
-		{
-			dv->d[0] |= 1;
-			if(!BN_usub(rem, rem, D)) { goto end; }
-		}
-		/* CAN IMPROVE (and have now :=) */
-		if(!BN_rshift1(D, D)) { goto end; }
-	}
-	rem->neg = BN_is_zero(rem) ? 0 : m->neg;
-	dv->neg = m->neg ^ d->neg;
-	ret = 1;
-end:
-	BN_CTX_end(ctx);
-	return (ret);
-}
-
-#else
-
 #if !defined(NO_ASM) && !defined(NO_INLINE_ASM) && !defined(PEDANTIC) && !defined(BN_DIV3W)
 # if defined(__GNUC__) && __GNUC__>=2
 #  if defined(__i386) || defined (__i386__)
@@ -350,42 +284,10 @@ err:
 	return (0);
 }
 
-#endif
-
 /* rem != m */
 int BN_mod(BIGNUM *rem, const BIGNUM *m, const BIGNUM *d, BN_CTX *ctx)
 {
-#if 0 /* The old slow way */
-	int i, nm, nd;
-	BIGNUM *dv;
-
-	if(BN_ucmp(m, d) < 0)
-		{ return ((BN_copy(rem, m) == NULL) ? 0 : 1); }
-
-	BN_CTX_start(ctx);
-	dv = BN_CTX_get(ctx);
-
-	if(!BN_copy(rem, m)) { goto err; }
-
-	nm = BN_num_bits(rem);
-	nd = BN_num_bits(d);
-	if(!BN_lshift(dv, d, nm - nd)) { goto err; }
-	for(i = nm - nd; i >= 0; i--)
-	{
-		if(BN_cmp(rem, dv) >= 0)
-		{
-			if(!BN_sub(rem, rem, dv)) { goto err; }
-		}
-		if(!BN_rshift1(dv, dv)) { goto err; }
-	}
-	BN_CTX_end(ctx);
-	return (1);
-err:
-	BN_CTX_end(ctx);
-	return (0);
-#else
 	return (BN_div(NULL, rem, m, d, ctx));
-#endif
 }
 
 #endif

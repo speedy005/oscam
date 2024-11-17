@@ -39,16 +39,6 @@ void aes_encrypt_idx(struct aes_keys *aes, uint8_t *buf, int32_t n)
 	}
 }
 
-void aes_cbc_encrypt(struct aes_keys *aes, uint8_t *buf, int32_t n, uint8_t *iv)
-{
-	AES_cbc_encrypt(buf, buf, n, &aes->aeskey_encrypt, iv, AES_ENCRYPT);
-}
-
-void aes_cbc_decrypt(struct aes_keys *aes, uint8_t *buf, int32_t n, uint8_t *iv)
-{
-	AES_cbc_encrypt(buf, buf, n, &aes->aeskey_decrypt, iv, AES_DECRYPT);
-}
-
 /* Creates an AES_ENTRY and adds it to the given linked list. */
 void add_aes_entry(AES_ENTRY **list, uint16_t caid, uint32_t ident, int32_t keyid, uint8_t *aesKey)
 {

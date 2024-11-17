@@ -382,21 +382,6 @@ struct cc_srvid_block *is_sid_blocked(struct cc_card *card, struct cc_srvid *srv
 	return srvid;
 }
 
-uint32_t has_perm_blocked_sid(struct cc_card *card)
-{
-	LL_ITER it = ll_iter_create(card->badsids);
-	struct cc_srvid_block *srvid;
-
-	while((srvid = ll_iter_next(&it)))
-	{
-		if(srvid->blocked_till == 0)
-		{
-			break;
-		}
-	}
-	return srvid != NULL;
-}
-
 struct cc_srvid *is_good_sid(struct cc_card *card, struct cc_srvid *srvid_good)
 {
 	LL_ITER it = ll_iter_create(card->goodsids);
@@ -474,23 +459,6 @@ void add_good_sid(struct cc_card *card, struct cc_srvid *srvid_good)
 	ll_append(card->goodsids, srvid);
 
 	cs_log_dbg(D_READER, "added good sid %04X(%d) for card %08x",
-				srvid_good->sid, srvid_good->ecmlen, card->id);
-}
-
-void remove_good_sid(struct cc_card *card, struct cc_srvid *srvid_good)
-{
-	LL_ITER it = ll_iter_create(card->goodsids);
-	struct cc_srvid *srvid;
-
-	while((srvid = ll_iter_next(&it)))
-	{
-		if(sid_eq(srvid, srvid_good))
-		{
-			ll_iter_remove_data(&it);
-		}
-	}
-
-	cs_log_dbg(D_READER, "removed good sid %04X(%d) for card %08x",
 				srvid_good->sid, srvid_good->ecmlen, card->id);
 }
 
@@ -1260,43 +1228,6 @@ int32_t send_cmd05_answer(struct s_client *cl)
 	return 1;
 }
 
-int32_t get_UA_ofs(uint16_t caid)
-{
-	int32_t ofs = 0;
-	switch(caid >> 8)
-	{
-		case 0x05: // VIACCESS
-		case 0x0D: // CRYPTOWORKS
-			//ofs = 1;
-			//break;
-		case 0x4A: // TONGFANG
-		case 0x09: // VIDEOGUARD
-		case 0x0B: // CONAX
-		case 0x18: // NAGRA
-		case 0x01: // SECA
-		case 0x00: // SECAMANAGMENT
-		case 0x17: // BETACRYPT
-		case 0x06: // IRDETO
-			ofs = 2;
-			break;
-	}
-
-	return ofs;
-}
-
-int32_t UA_len(uint8_t *ua)
-{
-	int32_t i, len = 0;
-
-	for(i = 0; i < 8; i++)
-	{
-		if(ua[i])
-		{
-			len++;
-		}
-	}
-	return len;
-}
 void UA_left(uint8_t *in, uint8_t *out, int32_t ofs)
 {
 	memset(out, 0, 8);
@@ -1389,19 +1320,8 @@ void cc_UA_cccam2oscam(uint8_t *in, uint8_t *out, uint16_t caid)
 		return;
 	}
 
-	int32_t ofs = get_UA_ofs(caid);
-	UA_left(in, tmp, ofs);
+	UA_left(in, tmp, 2);
 	newcamd_to_hexserial(tmp, out, caid);
-}
-
-void cc_SA_oscam2cccam(uint8_t *in, uint8_t *out)
-{
-	memcpy(out, in, 4);
-}
-
-void cc_SA_cccam2oscam(uint8_t *in, uint8_t *out)
-{
-	memcpy(out, in, 4);
 }
 
 int32_t cc_UA_valid(uint8_t *ua)
@@ -2190,27 +2110,6 @@ void cc_free_card(struct cc_card *card)
 	add_garbage(card);
 }
 
-struct cc_card *cc_get_card_by_id(uint32_t card_id, LLIST *cards)
-{
-	if(!cards)
-	{
-		return NULL;
-	}
-
-	LL_ITER it = ll_iter_create(cards);
-	struct cc_card *card;
-
-	while((card = ll_iter_next(&it)))
-	{
-		if(card->id == card_id)
-		{
-			break;
-		}
-	}
-
-	return card;
-}
-
 void cc_free_cardlist(LLIST *card_list, int32_t destroy_list)
 {
 	if(card_list)
@@ -2269,24 +2168,6 @@ int32_t is_null_dcw(uint8_t *dcw)
 			{ return 0; }
 	return 1;
 }
-
-/*int32_t is_dcw_corrupted(uint8_t *dcw)
-{
-	int32_t i;
-	int32_t c, cs;
-
-	for(i = 0; i < 16; i += 4)
-	{
-		c = (dcw[i] + dcw[i + 1] + dcw[i + 2]) & 0xFF;
-		cs = dcw[i + 3];
-
-		if(cs != c)
-		{
-			return (1);
-		}
-	}
-	return 0;
-}*/
 
 int32_t check_extended_mode(struct s_client *cl, char *msg)
 {

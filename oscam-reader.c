@@ -568,19 +568,6 @@ const char *reader_get_type_desc(struct s_reader *rdr, int32_t extended)
 	return desc;
 }
 
-bool hexserialset(struct s_reader *rdr)
-{
-	int i;
-	if(!rdr)
-		{ return false; }
-	for(i = 0; i < 8; i++)
-	{
-		if(rdr->hexserial[i])
-			{ return true; }
-	}
-	return false;
-}
-
 void hexserial_to_newcamd(uint8_t *source, uint8_t *dest, uint16_t caid)
 {
 	if(caid_is_bulcrypt(caid))

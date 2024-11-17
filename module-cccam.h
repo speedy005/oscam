@@ -1,6 +1,9 @@
 #ifndef MODULE_CCCAM_H_
 #define MODULE_CCCAM_H_
 
+#define cc_SA_oscam2cccam(A, B)   memcpy(B, A, 4)
+#define cc_SA_cccam2oscam(A, B)   memcpy(B, A, 4)
+
 // In this file put functions that are called outside of module-cccam.c and module-cccshare.c
 
 void cc_update_nodeid(void);

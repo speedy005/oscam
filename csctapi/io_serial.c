@@ -292,10 +292,8 @@ bool IO_Serial_SetParams(struct s_reader *reader, uint32_t bitrate, uint32_t bit
 	/* Selects raw (non-canonical) input and output */
 	newtio.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
 	newtio.c_oflag &= ~OPOST;
-#if 1
 	newtio.c_iflag |= IGNPAR;
 	/* Ignore parity errors!!! Windows driver does so why shouldn't I? */
-#endif
 	/* Enable receiver, hang on close, ignore control line */
 	newtio.c_cflag |= CREAD | HUPCL | CLOCAL;
 
@@ -823,22 +821,6 @@ static bool IO_Serial_WaitToWrite(struct s_reader *reader, uint32_t delay_us, ui
 				{ return ERROR; }
 		}
 	}
-}
-
-bool IO_Serial_InitPnP(struct s_reader *reader)
-{
-	uint32_t PnP_id_size = 0;
-	unsigned char PnP_id[IO_SERIAL_PNPID_SIZE]; /* PnP Id of the serial device */
-	int32_t dtr = IO_SERIAL_HIGH;
-	int32_t cts = IO_SERIAL_LOW;
-
-	if(IO_Serial_SetParams(reader, 1200, 7, PARITY_NONE, 1, &dtr, &cts))
-		{ return ERROR; }
-
-	while((PnP_id_size < IO_SERIAL_PNPID_SIZE) && !IO_Serial_Read(reader, 0, 200000, 1, &(PnP_id[PnP_id_size])))
-		{ PnP_id_size++; }
-
-	return OK;
 }
 
 int32_t IO_Serial_GetStatus(struct s_reader *reader, int32_t *status)
